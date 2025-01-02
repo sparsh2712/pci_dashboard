@@ -1,20 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const DataTable = ({ data, selectedRow, onCheckboxSelect, onZoomToRoad }) => {
+const DataTable = ({ data, onCheckboxSelect, onZoomToRoad }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchUsername, setSearchUsername] = useState("");
+  const [searchRoadName, setSearchRoadName] = useState("");
+  const [selectedRows, setSelectedRows] = useState([]);
   const rowsPerPage = 10;
 
-  // Calculate the number of pages
-  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const filteredData = data.filter((row) => {
+    const usernameMatch = row.userName
+      ?.toLowerCase()
+      .includes(searchUsername.toLowerCase());
+    const roadNameMatch = row.roadName
+      ?.toLowerCase()
+      .includes(searchRoadName.toLowerCase());
+    return usernameMatch && roadNameMatch;
+  });
 
-  // Slice data to show only rows for the current page
-  const currentData = data.slice(
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+  const currentData = filteredData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
 
   const handleCheckboxChange = (rowData) => {
+    const isSelected = selectedRows.some(
+      (row) => row.date === rowData.date && row.userName === rowData.userName
+    );
+
+    let newSelectedRows;
+    if (isSelected) {
+      newSelectedRows = selectedRows.filter(
+        (row) =>
+          !(row.date === rowData.date && row.userName === rowData.userName)
+      );
+    } else {
+      newSelectedRows = [...selectedRows, rowData];
+    }
+
+    setSelectedRows(newSelectedRows);
     onCheckboxSelect(rowData);
+  };
+
+  const isRowSelected = (rowData) => {
+    return selectedRows.some(
+      (row) => row.date === rowData.date && row.userName === rowData.userName
+    );
   };
 
   const handleZoomClick = (rowData) => {
@@ -22,51 +54,94 @@ const DataTable = ({ data, selectedRow, onCheckboxSelect, onZoomToRoad }) => {
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
   const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
   return (
     <div>
-      <h2>Data Table</h2>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
+        <input
+          type="text"
+          placeholder="Search Username"
+          value={searchUsername}
+          onChange={(e) => {
+            setSearchUsername(e.target.value);
+            setCurrentPage(1);
+          }}
+          style={{ padding: "5px" }}
+        />
+        <input
+          type="text"
+          placeholder="Search Road Name"
+          value={searchRoadName}
+          onChange={(e) => {
+            setSearchRoadName(e.target.value);
+            setCurrentPage(1);
+          }}
+          style={{ padding: "5px" }}
+        />
+      </div>
+
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th style={{ padding: '10px', border: '1px solid #ddd' }}>Select</th>
-            <th style={{ padding: '10px', border: '1px solid #ddd' }}>Date</th>
-            <th style={{ padding: '10px', border: '1px solid #ddd' }}>Username</th>
-            <th style={{ padding: '10px', border: '1px solid #ddd' }}>Road Name</th>
-            <th style={{ padding: '10px', border: '1px solid #ddd' }}>Actions</th>
+            <th style={{ padding: "10px", border: "1px solid #ddd" }}>
+              Select
+            </th>
+            <th style={{ padding: "10px", border: "1px solid #ddd" }}>Date</th>
+            <th style={{ padding: "10px", border: "1px solid #ddd" }}>
+              Username
+            </th>
+            <th style={{ padding: "10px", border: "1px solid #ddd" }}>
+              Road Name
+            </th>
+            <th style={{ padding: "10px", border: "1px solid #ddd" }}>
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
           {currentData.length > 0 ? (
             currentData.map((row, index) => (
               <tr key={index}>
-                <td style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'center' }}>
+                <td
+                  style={{
+                    padding: "10px",
+                    border: "1px solid #ddd",
+                    textAlign: "center",
+                  }}
+                >
                   <input
                     type="checkbox"
-                    checked={
-                      selectedRow &&
-                      selectedRow.date === row.date &&
-                      selectedRow.userName === row.userName
-                    }
+                    checked={isRowSelected(row)}
                     onChange={() => handleCheckboxChange(row)}
                     aria-label={`Select row ${index + 1}`}
                   />
                 </td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>{row.date || 'N/A'}</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>{row.userName || 'N/A'}</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>{row.roadName || 'N/A'}</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'center' }}>
-                  <button onClick={() => handleZoomClick(row)} aria-label={`Zoom to ${row.roadName}`}>
+                <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                  {row.date || "N/A"}
+                </td>
+                <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                  {row.userName || "N/A"}
+                </td>
+                <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                  {row.roadName || "N/A"}
+                </td>
+                <td
+                  style={{
+                    padding: "10px",
+                    border: "1px solid #ddd",
+                    textAlign: "center",
+                  }}
+                >
+                  <button
+                    onClick={() => handleZoomClick(row)}
+                    aria-label={`Zoom to ${row.roadName}`}
+                  >
                     Zoom
                   </button>
                 </td>
@@ -74,7 +149,7 @@ const DataTable = ({ data, selectedRow, onCheckboxSelect, onZoomToRoad }) => {
             ))
           ) : (
             <tr>
-              <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
+              <td colSpan="5" style={{ textAlign: "center", padding: "20px" }}>
                 No data available
               </td>
             </tr>
@@ -82,12 +157,18 @@ const DataTable = ({ data, selectedRow, onCheckboxSelect, onZoomToRoad }) => {
         </tbody>
       </table>
 
-      {/* Pagination Controls */}
-      <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div
+        style={{
+          marginTop: "20px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
-          style={{ marginRight: '10px' }}
+          style={{ marginRight: "10px" }}
         >
           Previous
         </button>
@@ -97,7 +178,7 @@ const DataTable = ({ data, selectedRow, onCheckboxSelect, onZoomToRoad }) => {
         <button
           onClick={handleNextPage}
           disabled={currentPage === totalPages}
-          style={{ marginLeft: '10px' }}
+          style={{ marginLeft: "10px" }}
         >
           Next
         </button>
