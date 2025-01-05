@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 
-const DataTable = ({ data, onCheckboxSelect, onZoomToRoad }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchUsername, setSearchUsername] = useState("");
-  const [searchRoadName, setSearchRoadName] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
+const DataTable = ({ data, selectedRows, onCheckboxSelect, onZoomToRoad }) => {
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [searchUsername, setSearchUsername] = React.useState("");
+  const [searchRoadName, setSearchRoadName] = React.useState("");
   const rowsPerPage = 10;
 
   const filteredData = data.filter((row) => {
@@ -25,32 +24,16 @@ const DataTable = ({ data, onCheckboxSelect, onZoomToRoad }) => {
   );
 
   const handleCheckboxChange = (rowData) => {
-    const isSelected = selectedRows.some(
-      (row) => row.date === rowData.date && row.userName === rowData.userName
-    );
-
-    let newSelectedRows;
-    if (isSelected) {
-      newSelectedRows = selectedRows.filter(
-        (row) =>
-          !(row.date === rowData.date && row.userName === rowData.userName)
-      );
-    } else {
-      newSelectedRows = [...selectedRows, rowData];
-    }
-
-    setSelectedRows(newSelectedRows);
     onCheckboxSelect(rowData);
   };
 
   const isRowSelected = (rowData) => {
     return selectedRows.some(
-      (row) => row.date === rowData.date && row.userName === rowData.userName
+      (row) =>
+        row.date === rowData.date &&
+        row.userName === rowData.userName &&
+        row.roadName === rowData.roadName
     );
-  };
-
-  const handleZoomClick = (rowData) => {
-    onZoomToRoad({ roadName: rowData.roadName, userName: rowData.userName });
   };
 
   const handleNextPage = () => {
@@ -107,7 +90,7 @@ const DataTable = ({ data, onCheckboxSelect, onZoomToRoad }) => {
         <tbody>
           {currentData.length > 0 ? (
             currentData.map((row, index) => (
-              <tr key={index}>
+              <tr key={`${row.date}-${row.userName}-${row.roadName}`}>
                 <td
                   style={{
                     padding: "10px",
@@ -139,7 +122,12 @@ const DataTable = ({ data, onCheckboxSelect, onZoomToRoad }) => {
                   }}
                 >
                   <button
-                    onClick={() => handleZoomClick(row)}
+                    onClick={() =>
+                      onZoomToRoad({
+                        roadName: row.roadName,
+                        userName: row.userName,
+                      })
+                    }
                     aria-label={`Zoom to ${row.roadName}`}
                   >
                     Zoom

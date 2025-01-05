@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import DataTable from '../components/DataTable';
-import MapView from '../components/MapView';
-import { useRoadContext } from '../context/RoadContext';
-import { fetchJourneys } from '../services/api'; // Import the fetch function
+import React, { useState, useEffect, useRef } from "react";
+import DataTable from "../components/DataTable";
+import MapView from "../components/MapView";
+import { useRoadContext } from "../context/RoadContext";
+import { fetchJourneys } from "../services/api"; 
 
 const Dashboard = () => {
   const { updateRoadData } = useRoadContext(); // Get update function from context
   const [data, setData] = useState([]); // State to store fetched data
   const [selectedRows, setSelectedRows] = useState([]);
+  const [lineColor, setLineColor] = useState('blue');
   const mapRef = useRef(null); // Reference for MapView
 
   useEffect(() => {
@@ -17,7 +18,7 @@ const Dashboard = () => {
         setData(fetchedData); // Update state with the fetched data
         updateRoadData(fetchedData); // Update the road context with the fetched data
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -26,40 +27,51 @@ const Dashboard = () => {
 
   const handleCheckboxSelect = (rowData) => {
     setSelectedRows((prevState) => {
-      const isAlreadySelected = prevState.find((item) => item.date === rowData.date);
+      const isAlreadySelected = prevState.some(
+        (item) =>
+          item.date === rowData.date &&
+          item.userName === rowData.userName &&
+          item.roadName === rowData.roadName
+      );
       if (isAlreadySelected) {
-        return prevState.filter((item) => item.date !== rowData.date);
+        return prevState.filter(
+          (item) =>
+            !(
+              item.date === rowData.date &&
+              item.userName === rowData.userName &&
+              item.roadName === rowData.roadName
+            )
+        );
       } else {
         return [...prevState, rowData];
       }
     });
   };
-const handleZoomToSelectedRoads = () => {
-  if (!mapRef.current) {
-    console.error("Map reference is not defined.");
-    return;
-  }
 
+  const handleZoomToSelectedRoads = () => {
+    if (!mapRef.current) {
+      console.error("Map reference is not defined.");
+      return;
+    }
 
-  const allCoordinates = selectedRows.flatMap((row) =>
-    row.segments.flatMap((segment) => segment.coordinates)
-  );
+    const allCoordinates = selectedRows.flatMap((row) =>
+      row.segments.flatMap((segment) => segment.coordinates)
+    );
 
-  if (allCoordinates.length === 0) {
-    console.warn("No coordinates found for the selected roads.");
-    return;
-  }
+    if (allCoordinates.length === 0) {
+      console.warn("No coordinates found for the selected roads.");
+      return;
+    }
 
+    const bounds = allCoordinates.map(([lat, lng]) => [lat, lng]);
 
-  const bounds = allCoordinates.map(([lat, lng]) => [lat, lng]);
-
-  try {
-    mapRef.current.fitBounds(bounds, { padding: [50, 50] });
-    console.log("Map zoom adjusted to the selected roads' bounds.");
-  } catch (error) {
-    console.error("Error while adjusting map zoom:", error);
-  }
-};
+    try {
+      mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+      console.log("Map zoom adjusted to the selected roads' bounds.");
+    } catch (error) {
+      console.error("Error while adjusting map zoom:", error);
+    }
+    };
 
   const handleZoomToRoad = (roadKey) => {
     const { roadName, userName } = roadKey;
@@ -112,23 +124,23 @@ const handleZoomToSelectedRoads = () => {
 
       const pciPrediction = segment.pci_score;
 
-      let velocityPrediction = '';
-      if (segment.avg_velocity*18/5> 39) {
-        velocityPrediction = '5';
-      } else if (segment.avg_velocity*18/5 > 30) {
-        velocityPrediction = '4';
-      } else if (segment.avg_velocity*18/5 > 20) {
-        velocityPrediction = '3';
-      } else if (segment.avg_velocity*18/5 > 10) {
-        velocityPrediction = '2';
+      let velocityPrediction = "";
+      if ((segment.avg_velocity * 18) / 5 > 39) {
+        velocityPrediction = "5";
+      } else if ((segment.avg_velocity * 18) / 5 > 30) {
+        velocityPrediction = "4";
+      } else if ((segment.avg_velocity * 18) / 5 > 20) {
+        velocityPrediction = "3";
+      } else if ((segment.avg_velocity * 18) / 5 > 10) {
+        velocityPrediction = "2";
       }
 
       return {
         segmentNum: index + 1,
-        avgVelocity: segment.avg_velocity * 18/5,
-        from: from.toFixed(2)/1000,
-        to: to.toFixed(2)/1000,
-        distance: segment.distance.toFixed(2)/1000,
+        avgVelocity: (segment.avg_velocity * 18) / 5,
+        from: from.toFixed(2) / 1000,
+        to: to.toFixed(2) / 1000,
+        distance: segment.distance.toFixed(2) / 1000,
         pciPrediction,
         velocityPrediction,
       };
@@ -136,11 +148,31 @@ const handleZoomToSelectedRoads = () => {
   };
 
   return (
-    <div style={{ padding: '20px', textAlign: 'center' }}>
+    <div style={{ padding: "20px", textAlign: "center" }}>
       <h1>Dashboard</h1>
-      <MapView ref={mapRef} />
+      <div style={{ marginBottom: '10px' }}>
+      <label style={{ marginRight: '10px' }}>
+        <input
+          type="radio"
+          value="blue"
+          checked={lineColor === 'blue'}
+          onChange={() => setLineColor('blue')}
+        />
+        Blue Lines
+      </label>
+      <label>
+        <input
+          type="radio"
+          value="red"
+          checked={lineColor === 'red'}
+          onChange={() => setLineColor('red')}
+        />
+        Red Lines
+      </label>
+    </div>
+    <MapView ref={mapRef} lineColor={lineColor} />
 
-      <h2 style={{ marginTop: '30px' }}>Data Table</h2>
+    <h2 style={{ marginTop: "30px" }}>Data Table</h2>
 
       <div style={{ marginTop: '20px' }}>
         <DataTable
