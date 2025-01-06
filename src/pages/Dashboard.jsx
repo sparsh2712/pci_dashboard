@@ -3,12 +3,13 @@ import DataTable from "../components/DataTable";
 import MapView from "../components/MapView";
 import { useRoadContext } from "../context/RoadContext";
 import { fetchJourneys } from "../services/api"; 
+import Summary from "../components/Summary";
 
 const Dashboard = () => {
   const { updateRoadData } = useRoadContext(); // Get update function from context
   const [data, setData] = useState([]); // State to store fetched data
   const [selectedRows, setSelectedRows] = useState([]);
-  const [lineColor, setLineColor] = useState('blue');
+  const [pciType, setPciType] = useState('pciBased');
   const mapRef = useRef(null); // Reference for MapView
 
   useEffect(() => {
@@ -131,7 +132,7 @@ const Dashboard = () => {
         velocityPrediction = "4";
       } else if ((segment.avg_velocity * 18) / 5 > 20) {
         velocityPrediction = "3";
-      } else if ((segment.avg_velocity * 18) / 5 > 10) {
+      } else {
         velocityPrediction = "2";
       }
 
@@ -154,23 +155,23 @@ const Dashboard = () => {
       <label style={{ marginRight: '10px' }}>
         <input
           type="radio"
-          value="blue"
-          checked={lineColor === 'blue'}
-          onChange={() => setLineColor('blue')}
+          value="pciBased"
+          checked={pciType === 'pciBased'}
+          onChange={() => setPciType('pciBased')}
         />
-        Blue Lines
+        PCI Based
       </label>
       <label>
         <input
           type="radio"
-          value="red"
-          checked={lineColor === 'red'}
-          onChange={() => setLineColor('red')}
+          value="velocityBased"
+          checked={pciType === 'velocityBased'}
+          onChange={() => setPciType('velocityBased')}
         />
-        Red Lines
+        Velocity Based
       </label>
     </div>
-    <MapView ref={mapRef} lineColor={lineColor} />
+    <MapView ref={mapRef} pciType={pciType} />
 
     <h2 style={{ marginTop: "30px" }}>Data Table</h2>
 
@@ -222,6 +223,9 @@ const Dashboard = () => {
             </table>
           </div>
         ))}
+      </div>
+      <div style={{ marginTop: '20px' }}>
+        <Summary selectedRoads={selectedRows} />
       </div>
     </div>
   );

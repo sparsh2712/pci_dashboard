@@ -19,7 +19,7 @@ const MapView = forwardRef(({ pciType }, ref) => {
   }, [pciType]);
 
   const getColor = (type, pciScore, velocityScore) => {
-    const score = type === 'pci_score' ? pciScore : velocityScore;
+    const score = type === 'pciBased' ? pciScore : velocityScore;
     const colors = ['red', 'orange', 'yellow', 'blue', 'green'];
     return colors[score - 1];
   };
