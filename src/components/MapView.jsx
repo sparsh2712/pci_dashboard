@@ -11,8 +11,52 @@ const MapController = forwardRef((_, ref) => {
   return null;
 });
 
-const MapView = forwardRef(({ pciType }, ref) => {
+const Legend = () => {
+  const map = useMap();
+
+  useEffect(() => {
+    const legend = L.control({ position: 'bottomright' });
+
+    legend.onAdd = () => {
+      const div = L.DomUtil.create('div', 'info legend');
+
+      const colors = ['red', 'orange', 'yellow', 'blue', 'green'];
+      const labels = [1, 2, 3, 4, 5];
+
+      // Add styles for the legend box
+      div.style.backgroundColor = 'rgba(255, 255, 255, 0.8)'; // Translucent white background
+      div.style.padding = '10px';
+      div.style.borderRadius = '5px';
+      div.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.2)';
+      div.style.fontFamily = '"Cilia", sans-serif'; // Use the Cilia font
+      div.style.color = 'black'; // Black text
+
+      div.innerHTML = '<strong>Legend</strong><br>';
+      colors.forEach((color, index) => {
+        div.innerHTML += `
+          <i style="background:${color}; width: 12px; height: 12px; display: inline-block; margin-right: 5px; border: 1px solid #000;"></i>
+          <span>${labels[index]}</span><br>
+        `;
+      });
+
+      return div;
+    };
+
+    legend.addTo(map);
+
+    return () => {
+      map.removeControl(legend);
+    };
+  }, [map]);
+
+  return null;
+};
+
+
+
+const MapView = forwardRef(({ pciType, displayedRoads }, ref) => {
   const { roadData } = useRoadContext();
+  const roadsToDisplay = displayedRoads.length > 0 ? displayedRoads : roadData;
 
   useEffect(() => {
     console.log('pciType updated:', pciType);
@@ -34,7 +78,7 @@ const MapView = forwardRef(({ pciType }, ref) => {
 
   return (
     <MapContainer
-      center={[51.505, -0.09]}
+      center={[19, 78]}
       zoom={13}
       style={{ height: '80vh', width: '97vw' }}
     >
@@ -43,8 +87,9 @@ const MapView = forwardRef(({ pciType }, ref) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
+      <Legend />
 
-      {roadData.map((item, roadIndex) =>
+    {roadsToDisplay.map((item, roadIndex) =>
         item.segments.map((segment, segmentIndex) => {
           const velocityKmph = ((segment.avg_velocity * 18) / 5).toFixed(2);
           const velocityScore = calculateVelocityScore(velocityKmph);
@@ -52,7 +97,7 @@ const MapView = forwardRef(({ pciType }, ref) => {
 
           return (
             <Polyline
-              key={`${roadIndex}-${segmentIndex}-${pciType}`}
+              key={`${roadIndex}-${segmentIndex}-${pciType}-${displayedRoads}`}
               positions={segment.coordinates}
               color={color}
               weight={3}

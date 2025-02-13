@@ -38,7 +38,7 @@ const calculateSummary = (selectedRoads, key) => {
 
 
 const SummaryTable = ({ title, data }) => (
-  <div style={{ marginBottom: "20px" }}>
+  <div style={{ marginBottom: "20px", }}>
     <h3>{title}</h3>
     <table>
       <thead>

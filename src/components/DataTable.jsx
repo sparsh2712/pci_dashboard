@@ -1,6 +1,6 @@
 import React from "react";
 
-const DataTable = ({ data, selectedRows, onCheckboxSelect, onZoomToRoad }) => {
+const DataTable = ({ InputuserName, InputRoadName, InputEndDate, InputStartDate, data, selectedRows, onCheckboxSelect, onZoomToRoad }) => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [searchUsername, setSearchUsername] = React.useState("");
   const [searchRoadName, setSearchRoadName] = React.useState("");
@@ -9,12 +9,17 @@ const DataTable = ({ data, selectedRows, onCheckboxSelect, onZoomToRoad }) => {
   const filteredData = data.filter((row) => {
     const usernameMatch = row.userName
       ?.toLowerCase()
-      .includes(searchUsername.toLowerCase());
+      .includes(InputuserName.toLowerCase());
     const roadNameMatch = row.roadName
       ?.toLowerCase()
-      .includes(searchRoadName.toLowerCase());
-    return usernameMatch && roadNameMatch;
-  });
+      .includes(InputRoadName.toLowerCase());
+    const dateMatch =
+      !InputStartDate || !InputEndDate
+        ? true // No date filter applied if both fields are empty
+        : new Date(row.date) >= new Date(InputStartDate) &&
+        new Date(row.date) <= new Date(InputEndDate);
+    return usernameMatch && roadNameMatch && dateMatch;
+  }).sort((a, b) => new Date(b.date) - new Date(a.date));;
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
@@ -46,45 +51,22 @@ const DataTable = ({ data, selectedRows, onCheckboxSelect, onZoomToRoad }) => {
 
   return (
     <div>
-      <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
-        <input
-          type="text"
-          placeholder="Search Username"
-          value={searchUsername}
-          onChange={(e) => {
-            setSearchUsername(e.target.value);
-            setCurrentPage(1);
-          }}
-          style={{ padding: "5px" }}
-        />
-        <input
-          type="text"
-          placeholder="Search Road Name"
-          value={searchRoadName}
-          onChange={(e) => {
-            setSearchRoadName(e.target.value);
-            setCurrentPage(1);
-          }}
-          style={{ padding: "5px" }}
-        />
-      </div>
-
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <table style={{ width: "40vw", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th style={{ padding: "10px", border: "1px solid #ddd" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "2%" }}>
               Select
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd" }}>Date</th>
-            <th style={{ padding: "10px", border: "1px solid #ddd" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "15%"  }}>Date</th>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "8%"  }}>
               Username
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd" }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "5%"  }}>
               Road Name
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd" }}>
+            {/* <th style={{ padding: "10px", border: "1px solid #ddd" }}>
               Actions
-            </th>
+            </th> */}
           </tr>
         </thead>
         <tbody>
@@ -114,7 +96,7 @@ const DataTable = ({ data, selectedRows, onCheckboxSelect, onZoomToRoad }) => {
                 <td style={{ padding: "10px", border: "1px solid #ddd" }}>
                   {row.roadName || "N/A"}
                 </td>
-                <td
+                {/* <td
                   style={{
                     padding: "10px",
                     border: "1px solid #ddd",
@@ -132,7 +114,7 @@ const DataTable = ({ data, selectedRows, onCheckboxSelect, onZoomToRoad }) => {
                   >
                     Zoom
                   </button>
-                </td>
+                </td> */}
               </tr>
             ))
           ) : (
