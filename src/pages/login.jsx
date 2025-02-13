@@ -18,12 +18,12 @@ const Login = () => {
         <div style={{ height: "120px" }}></div>
         <div style={{ display: "flex", alignItems: "center",gap: "15px", textAlign: "left",  }}>
           <img src={iitblogo} alt="IITB Logo" style={{ width: "80px", height: "80px", borderRadius: "50%" }} />
-          <h3 style={{ fontSize: "30px",fontFamily:"sans-serif", fontWeight: "100", fontStyle:"italic",margin: 0,  }}>IITB - Unnat Maharashtra Abhiyan </h3>
+          <h3 style={{ fontSize: "26px",fontFamily:"cursive", fontWeight: "100", fontStyle:"italic",margin: 0,letterSpacing:"2px"  }}>IITB - Unnat Maharashtra Abhiyan </h3>
         </div>
-        <h3 style={{ fontSize: "20px", fontWeight: "100", margin: "20px 0", marginLeft:"200px" }}>in collaboration with</h3>
+        <h3 style={{ fontSize: "20px", fontWeight: "100", fontFamily:"cursive", margin: "20px 0", marginLeft:"200px" }}>in collaboration with</h3>
         <div style={{ display: "flex", alignItems: "center", gap: "15px",textAlign: "left" }}>
           <img src={zplogo} alt="Zilla Parishad Logo" style={{ width: "120px", height: "120px", borderRadius: "50%" }} />
-          <h3 style={{ fontSize: "30px", fontFamily:"sans-serif", fontWeight: "0",fontStyle:"italic", margin: 0 }}>Zilla Parishad, Ratnagiri</h3>
+          <h3 style={{ fontSize: "26px", fontFamily:"cursive", fontWeight: "100",fontStyle:"italic", margin: 0,letterSpacing:"2px"  }}>Zilla Parishad, Ratnagiri</h3>
         </div>
       </div>
       <div style={{ borderRadius: "30px", width: "400px", height: "500px", backgroundColor: "#343434", padding: "10px" }}>

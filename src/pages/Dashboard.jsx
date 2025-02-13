@@ -232,7 +232,8 @@ const Dashboard = () => {
 
   return (
     <div style={{ padding: "10px", textAlign: "center", maxWidth: "100vw" }}>
-      <button style={{ position: "absolute", right: "60px", top: "10px" }} onClick={() => navigate('/login')}>Login</button>
+      <button style={{ position: "absolute", right: "60px", top: "10px" }} onClick={() => navigate('/login')}>Log Out</button>
+      <div style={{height:"50px"}}></div>
       <div style={{display: "flex", alignItems: "center", justifyContent:"space-evenly"}}>
         <img src={iitblogo} alt="IITB Logo" style={{ width: "110px", height: "110px", borderRadius: "50%" }} />
         <h1>Pavement Condition Index (PCI) Dashboard</h1>
