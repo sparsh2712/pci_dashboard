@@ -1,0 +1,11 @@
+.nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-size: 1.2rem;
+    transition: color 0.3s ease-in-out;
+}
+
+.nav ul li a:hover {
+    color: rgb(252, 240, 15); /* Green color on hover */
+    font-size: 1.2rem;
+}
