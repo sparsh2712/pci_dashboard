@@ -110,14 +110,17 @@
 
 import React, { useState } from 'react';
 import axios from 'axios';
+import  { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import iitblogo from '../assets/iitblogo.jpeg';
 import zplogo from '../assets/zplogo.jpeg';
 import roadLP2 from '../assets/roadLP2.png';
+import { LoginContext } from '../context/AuthContext';
 
 const Login = () => {
   const [userName, setUserName] = useState("");
   const [phoneNum, setPhoneNum] = useState("");
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   const navigate = useNavigate();
 
   // Responsive style helper
@@ -241,6 +244,8 @@ const Login = () => {
 
               if (response.data.success) {
                 navigate('/');
+                setIsLoggedIn(true);
+                console.log("user looged in");
               } else {
                 alert("No such user exists");
               }

@@ -7,16 +7,14 @@ const NavBar = () => {
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
-    // const handleDashboardClick = () => {
-    //     if (isLoggedIn) {
-    //         navigate('/dashboard'); // Navigate to Dashboard if logged in
-    //     } else {
-    //         navigate('/login'); // Navigate to Login if not logged in
-    //     }
-    // };
     const handleDashboardClick = () => {
+        if (isLoggedIn) {
             navigate('/dashboard'); // Navigate to Dashboard if logged in
+        } else {
+            navigate('/login'); // Navigate to Login if not logged in
+        }
     };
+
 
     const handleLogin = () => {
         navigate('/login');

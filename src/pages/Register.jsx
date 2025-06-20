@@ -221,7 +221,7 @@ const Login = () => {
         <input
           type="email"
           placeholder="email"
-          value={phoneNum}
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
           style={{
             width: "100%",
