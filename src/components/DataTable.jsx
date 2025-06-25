@@ -1,6 +1,6 @@
 import React from "react";
 
-const DataTable = ({ InputuserName, InputRoadName, InputEndDate, InputStartDate, data, selectedRows, onCheckboxSelect, onZoomToRoad }) => {
+const DataTable = ({ InputuserName, InputRoadName, InputEndDate, InputStartDate, data, selectedRows, onCheckboxSelect, onZoomToRoad, loading }) => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [searchUsername, setSearchUsername] = React.useState("");
   const [searchRoadName, setSearchRoadName] = React.useState("");
@@ -57,11 +57,11 @@ const DataTable = ({ InputuserName, InputRoadName, InputEndDate, InputStartDate,
             <th style={{ padding: "10px", border: "1px solid #ddd", width: "2%" }}>
               Select
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "15%"  }}>Date</th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "8%"  }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "15%" }}>Date</th>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "8%" }}>
               Username
             </th>
-            <th style={{ padding: "10px", border: "1px solid #ddd", width: "5%"  }}>
+            <th style={{ padding: "10px", border: "1px solid #ddd", width: "5%" }}>
               Road Name
             </th>
             {/* <th style={{ padding: "10px", border: "1px solid #ddd" }}>
@@ -70,7 +70,13 @@ const DataTable = ({ InputuserName, InputRoadName, InputEndDate, InputStartDate,
           </tr>
         </thead>
         <tbody>
-          {currentData.length > 0 ? (
+          {loading ? (
+            <tr>
+              <td colSpan="5" style={{ textAlign: "center", padding: "20px" }}>
+                Loading data...
+              </td>
+            </tr>
+          ) : currentData.length > 0 ? (
             currentData.map((row, index) => (
               <tr key={`${row.date}-${row.userName}-${row.roadName}`}>
                 <td

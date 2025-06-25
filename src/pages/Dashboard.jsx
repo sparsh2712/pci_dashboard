@@ -9,7 +9,9 @@ import { useNavigate } from 'react-router-dom';
 import iitblogo from '../assets/iitblogo.jpeg'
 import zplogo from '../assets/zplogo.jpeg'
 
+
 const Dashboard = () => {
+  const [loading, setLoading] = useState(true);
   const { updateRoadData } = useRoadContext(); // Get update function from context
   const [data, setData] = useState([]); // State to store fetched data
   const [selectedRows, setSelectedRows] = useState([]);
@@ -30,19 +32,37 @@ const Dashboard = () => {
   });
 
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const fetchedData = await fetchJourneys(); // Fetch data using the API function
-        setData(fetchedData); // Update state with the fetched data
-        updateRoadData(fetchedData); // Update the road context with the fetched data
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     try {
+  //       const fetchedData = await fetchJourneys(); // Fetch data using the API function
+  //       setData(fetchedData); // Update state with the fetched data
+  //       updateRoadData(fetchedData); // Update the road context with the fetched data
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
 
-    getData(); // Call the function to fetch data
-  }, [updateRoadData]);
+  //   getData(); // Call the function to fetch data
+  // }, [updateRoadData]);
+
+  useEffect(() => {
+  const getData = async () => {
+    try {
+      setLoading(true);  // start loading
+      const fetchedData = await fetchJourneys();
+      console.log("data:",fetchedData)
+      setData(fetchedData);
+      updateRoadData(fetchedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  getData();
+}, []);
 
   const handleCheckboxSelect = (rowData) => {
     setSelectedRows((prevState) => {
@@ -306,6 +326,7 @@ const Dashboard = () => {
               selectedRows={selectedRows}
               onCheckboxSelect={handleCheckboxSelect}
               onZoomToRoad={handleZoomToRoad}
+              loading={loading}   
             />
           </div>
           <div style={{ marginTop: '20px' }}>
